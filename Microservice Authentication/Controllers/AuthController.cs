@@ -37,12 +37,14 @@ namespace Microservice_Authentication.Controllers
             }
             var userDTO = _userService.GetUserByUsername(loginModel.UserName);
 
-            var passwordSalt = _userService.GetPasswordSalt(userDTO.Result.PasswordId);
+            var response = userDTO.Result;
+
+            var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
 
             if (userDTO.Status == TaskStatus.Faulted || userDTO is null)
                 return Unauthorized();
 
-            if (!VerifyPassword(loginModel.Password, userDTO.Result.HashedPassword, passwordSalt.Result.Salt))
+            if (!VerifyPassword(loginModel.Password, response.HashedPassword, passwordSalt.Salt))
                 return Unauthorized();
 
             var claims = new List<Claim>
