@@ -28,6 +28,7 @@ namespace Microservice_Authentication.Controllers
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
+
         [HttpPost, Route("login")]
         public IActionResult Login([FromBody] AuthEntity loginModel)
         {
