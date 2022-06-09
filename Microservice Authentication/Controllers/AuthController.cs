@@ -65,7 +65,7 @@ namespace Microservice_Authentication.Controllers
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
             user.UserId = _userService.GetUserIdByUsername(loginModel.UserName).Result;
 
-            UserDTO editedUser = _userService.UpdateUser(user).Result;
+            UserDTO editedUser =_userService.UpdateUser(user).Result;
 
             if (editedUser is null)
             {
