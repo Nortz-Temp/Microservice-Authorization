@@ -44,10 +44,15 @@ namespace Microservice_Authentication.Models
         /// </summary>
         public Guid UserTypeId { get; set; }
 
-        /// <summary>
+        /*/// <summary>
         /// User usertype dto
         /// </summary>
-        public UserTypeDTO UserType { get; set; }
+        public UserTypeDTO UserType { get; set; }*/
+
+        /// <summary>
+        /// User usertype name
+        /// </summary>
+        public string UserTypeName { get; set; }
 
         /// <summary>
         /// Refresh token

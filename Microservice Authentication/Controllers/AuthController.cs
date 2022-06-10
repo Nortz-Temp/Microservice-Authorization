@@ -51,7 +51,7 @@ namespace Microservice_Authentication.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, loginModel.UserName),
-                new Claim(ClaimTypes.Role, response.UserType.TypeName)
+                new Claim(ClaimTypes.Role, response.UserTypeName)
             };
 
             var accessToken = _tokenService.GenerateAccessToken(claims);
