@@ -32,51 +32,58 @@ namespace Microservice_Authentication.Controllers
         [HttpPost, Route("login")]
         public IActionResult Login([FromBody] AuthEntity loginModel)
         {
-            if (loginModel is null)
+            try
             {
-                return BadRequest("Invalid client request");
-            }
-            var userDTO = _userService.GetUserByUsername(loginModel.UserName);
+                if (loginModel is null)
+                {
+                    return BadRequest("Invalid client request");
+                }
+                var userDTO = _userService.GetUserByUsername(loginModel.UserName);
 
-            var response = userDTO.Result;
+                var response = userDTO.Result;
 
-            var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
+                var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
 
-            if (userDTO.Status == TaskStatus.Faulted || userDTO is null)
-                return Unauthorized();
+                if (userDTO.Status == TaskStatus.Faulted || userDTO is null)
+                    return Unauthorized();
 
-            if (!VerifyPassword(loginModel.Password, response.HashedPassword, passwordSalt.Salt))
-                return Unauthorized();
+                if (!VerifyPassword(loginModel.Password, response.HashedPassword, passwordSalt.Salt))
+                    return Unauthorized();
 
-            var claims = new List<Claim>
+                var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, loginModel.UserName),
                 new Claim(ClaimTypes.Role, response.UserTypeName)
             };
 
-            var accessToken = _tokenService.GenerateAccessToken(claims);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            userDTO.Result.RefreshToken = refreshToken;
-            userDTO.Result.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
+                var accessToken = _tokenService.GenerateAccessToken(claims);
+                var refreshToken = _tokenService.GenerateRefreshToken();
+                userDTO.Result.RefreshToken = refreshToken;
+                userDTO.Result.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
 
-            UserEntity user = _mapper.Map<UserEntity>(userDTO.Result);
+                UserEntity user = _mapper.Map<UserEntity>(userDTO.Result);
 
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-            user.UserId = _userService.GetUserIdByUsername(loginModel.UserName).Result;
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
+                user.UserId = _userService.GetUserIdByUsername(loginModel.UserName).Result;
 
-            UserDTO editedUser =_userService.UpdateUser(user).Result;
+                UserDTO editedUser = _userService.UpdateUser(user).Result;
 
-            if (editedUser is null)
+                if (editedUser is null)
+                {
+                    return BadRequest("Invalid client request");
+                }
+
+                return Ok(new AuthenticatedResponseDTO
+                {
+                    Token = accessToken,
+                    RefreshToken = refreshToken
+                });
+            }catch(Exception e)
             {
-                return BadRequest("Invalid client request");
+                return StatusCode(500, e.StackTrace);
             }
-
-            return Ok(new AuthenticatedResponseDTO
-            {
-                Token = accessToken,
-                RefreshToken = refreshToken
-            });
+           
         }
 
         private bool VerifyPassword(string password, string savedHash, string savedSalt)
