@@ -42,6 +42,11 @@ namespace Microservice_Authentication.Controllers
 
                 var response = userDTO.Result;
 
+                if(response.Username is null)
+                {
+                    return BadRequest("Invalid username");
+                }
+
                 var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
 
                 if (userDTO.Status == TaskStatus.Faulted || userDTO is null)
@@ -51,10 +56,10 @@ namespace Microservice_Authentication.Controllers
                     return Unauthorized();
 
                 var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, loginModel.UserName),
-                new Claim(ClaimTypes.Role, response.UserTypeName)
-            };
+                {
+                    new Claim(ClaimTypes.Name, loginModel.UserName),
+                    new Claim(ClaimTypes.Role, response.UserTypeName)
+                };
 
                 var accessToken = _tokenService.GenerateAccessToken(claims);
                 var refreshToken = _tokenService.GenerateRefreshToken();
@@ -79,7 +84,8 @@ namespace Microservice_Authentication.Controllers
                     Token = accessToken,
                     RefreshToken = refreshToken
                 });
-            }catch(Exception e)
+            }
+            catch(Exception e)
             {
                 return StatusCode(500, e.StackTrace);
             }
