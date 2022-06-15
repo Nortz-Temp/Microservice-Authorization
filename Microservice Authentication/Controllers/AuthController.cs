@@ -32,7 +32,7 @@ namespace Microservice_Authentication.Controllers
         [HttpPost, Route("login")]
         public IActionResult Login([FromBody] AuthEntity loginModel)
         {
-         //   try
+            try
             {
                 if (loginModel is null)
                 {
@@ -81,9 +81,9 @@ namespace Microservice_Authentication.Controllers
                     Token = accessToken,
                     RefreshToken = refreshToken
                 });
-            }//catch(Exception e)
+            }catch(Exception e)
             {
-                return StatusCode(500, "");
+                return StatusCode(500, e.StackTrace);
             }
            
         }
