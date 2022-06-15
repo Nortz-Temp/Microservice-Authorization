@@ -52,7 +52,7 @@ namespace Microservice_Authentication.Models
         /// <summary>
         /// User usertype name
         /// </summary>
-        public string UserTypeName { get; set; }
+        public string UserType { get; set; }
 
         /// <summary>
         /// Refresh token

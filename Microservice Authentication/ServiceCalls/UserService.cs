@@ -27,8 +27,15 @@ namespace Microservice_Authentication.ServiceCalls
                 Uri url = new Uri($"{ configuration["Services:UserService"] }api/users/auth/{username}");
 
                 HttpResponseMessage response = client.GetAsync(url).Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return new UserDTO();
+                }
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var user = JsonConvert.DeserializeObject<UserDTO>(responseContent);
+
+               
 
                 return user;
             }

@@ -32,7 +32,7 @@ namespace Microservice_Authentication.Controllers
         [HttpPost, Route("login")]
         public IActionResult Login([FromBody] AuthEntity loginModel)
         {
-            try
+         //   try
             {
                 if (loginModel is null)
                 {
@@ -44,7 +44,9 @@ namespace Microservice_Authentication.Controllers
 
                 var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
 
-                if (userDTO.Status == TaskStatus.Faulted || userDTO is null)
+              
+
+                if (userDTO.Status == TaskStatus.Faulted || userDTO is null || userDTO.Result.Username is null)
                     return Unauthorized();
 
                 if (!VerifyPassword(loginModel.Password, response.HashedPassword, passwordSalt.Salt))
@@ -53,7 +55,7 @@ namespace Microservice_Authentication.Controllers
                 var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, loginModel.UserName),
-                new Claim(ClaimTypes.Role, response.UserTypeName)
+                new Claim(ClaimTypes.Role, response.UserType)
             };
 
                 var accessToken = _tokenService.GenerateAccessToken(claims);
@@ -79,9 +81,9 @@ namespace Microservice_Authentication.Controllers
                     Token = accessToken,
                     RefreshToken = refreshToken
                 });
-            }catch(Exception e)
+            }//catch(Exception e)
             {
-                return StatusCode(500, e.StackTrace);
+                return StatusCode(500, "");
             }
            
         }
