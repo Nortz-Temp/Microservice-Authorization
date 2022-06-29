@@ -48,15 +48,5 @@ namespace Microservice_Authentication.Entities
         /// User usertype id
         /// </summary>
         public Guid UserTypeId { get; set; }
-
-        /// <summary>
-        /// Refresh token
-        /// </summary>
-        public string? RefreshToken { get; set; }
-
-        /// <summary>
-        /// Refresh token expiry time
-        /// </summary>
-        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

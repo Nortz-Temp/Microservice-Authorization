@@ -44,7 +44,6 @@ namespace Microservice_Authentication.Controllers
 
                 var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
 
-              
 
                 if (userDTO.Status == TaskStatus.Faulted || userDTO is null || userDTO.Result.Username is null)
                     return Unauthorized();
@@ -59,14 +58,7 @@ namespace Microservice_Authentication.Controllers
             };
 
                 var accessToken = _tokenService.GenerateAccessToken(claims);
-                var refreshToken = _tokenService.GenerateRefreshToken();
-                userDTO.Result.RefreshToken = refreshToken;
-                userDTO.Result.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-
                 UserEntity user = _mapper.Map<UserEntity>(userDTO.Result);
-
-                user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
                 user.UserId = _userService.GetUserIdByUsername(loginModel.UserName).Result;
 
                 UserDTO editedUser = _userService.UpdateUser(user).Result;
@@ -78,8 +70,7 @@ namespace Microservice_Authentication.Controllers
 
                 return Ok(new AuthenticatedResponseDTO
                 {
-                    Token = accessToken,
-                    RefreshToken = refreshToken
+                    Token = accessToken
                 });
             }catch(Exception e)
             {
