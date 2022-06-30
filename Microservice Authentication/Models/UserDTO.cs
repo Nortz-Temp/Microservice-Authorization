@@ -53,15 +53,5 @@ namespace Microservice_Authentication.Models
         /// User usertype name
         /// </summary>
         public string UserType { get; set; }
-
-        /// <summary>
-        /// Refresh token
-        /// </summary>
-        public string? RefreshToken { get; set; }
-
-        /// <summary>
-        /// Refresh token expiry time
-        /// </summary>
-        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

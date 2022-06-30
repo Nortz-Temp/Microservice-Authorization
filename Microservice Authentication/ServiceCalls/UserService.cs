@@ -19,23 +19,22 @@ namespace Microservice_Authentication.ServiceCalls
             this.configuration = configuration;
         }
 
-        public async Task<UserDTO> GetUserByUsername(string username)
+        public async Task<UserFrontDTO> GetUserByUsername(AuthEntity principal)
         {
             using (HttpClient client = new HttpClient())
             {
-                var x = configuration["Services:UserService"];
-                Uri url = new Uri($"{ configuration["Services:UserService"] }api/users/auth/{username}");
+                Uri url = new Uri($"{ configuration["Services:UserService"] }api/users/auth/username");
+                HttpContent content = new StringContent(JsonConvert.SerializeObject(principal));
+                content.Headers.ContentType.MediaType = "application/json";
 
-                HttpResponseMessage response = client.GetAsync(url).Result;
+                HttpResponseMessage response = client.PostAsync(url, content).Result;
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    return new UserDTO();
+                    return new UserFrontDTO();
                 }
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var user = JsonConvert.DeserializeObject<UserDTO>(responseContent);
-
-               
+                var user = JsonConvert.DeserializeObject<UserFrontDTO>(responseContent);
 
                 return user;
             }
@@ -56,7 +55,7 @@ namespace Microservice_Authentication.ServiceCalls
             }
         }
 
-        public async Task<UserDTO> UpdateUser(UserEntity user)
+        public async Task<UserFrontDTO> UpdateUser(UserEntity user)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -68,7 +67,7 @@ namespace Microservice_Authentication.ServiceCalls
 
                 HttpResponseMessage response = client.PutAsync(url.ToString(), content).Result;
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var userDTO = JsonConvert.DeserializeObject<UserDTO>(responseContent);
+                var userDTO = JsonConvert.DeserializeObject<UserFrontDTO>(responseContent);
 
                 return userDTO;
             }

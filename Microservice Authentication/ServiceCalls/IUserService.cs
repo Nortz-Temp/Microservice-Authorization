@@ -9,12 +9,12 @@ namespace Microservice_Authentication.ServiceCalls
 {
     public interface IUserService
     {
-        public Task<UserDTO> GetUserByUsername(string username);
+        public Task<UserFrontDTO> GetUserByUsername(AuthEntity principal);
 
         public Task<Guid> GetUserIdByUsername(string username);
 
         public Task<PasswordDTO> GetPasswordSalt(Guid passwordId);
 
-        public Task<UserDTO> UpdateUser(UserEntity user);
+        public Task<UserFrontDTO> UpdateUser(UserEntity user);
     }
 }

@@ -38,48 +38,29 @@ namespace Microservice_Authentication.Controllers
                 {
                     return BadRequest("Invalid client request");
                 }
-                var userDTO = _userService.GetUserByUsername(loginModel.UserName);
+                var userDTO = _userService.GetUserByUsername(loginModel);
 
                 var response = userDTO.Result;
 
-                var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
+                //var passwordSalt = _userService.GetPasswordSalt(response.PasswordId).Result;
 
-              
-
-                if (userDTO.Status == TaskStatus.Faulted || userDTO is null || userDTO.Result.Username is null)
+                if (userDTO.Status == TaskStatus.Faulted || userDTO is null)
                     return Unauthorized();
 
-                if (!VerifyPassword(loginModel.Password, response.HashedPassword, passwordSalt.Salt))
-                    return Unauthorized();
+                //if (!VerifyPassword(loginModel.Password, response.HashedPassword, passwordSalt.Salt))
+                //    return Unauthorized();
 
                 var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, loginModel.UserName),
-                new Claim(ClaimTypes.Role, response.UserType)
-            };
+                {
+                    new Claim(ClaimTypes.Name, loginModel.UserName),
+                    new Claim(ClaimTypes.Role, response.UserType),
+                    new Claim(ClaimTypes.Email, response.Email)
+                };
 
                 var accessToken = _tokenService.GenerateAccessToken(claims);
-                var refreshToken = _tokenService.GenerateRefreshToken();
-                userDTO.Result.RefreshToken = refreshToken;
-                userDTO.Result.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-
-                UserEntity user = _mapper.Map<UserEntity>(userDTO.Result);
-
-                user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-                user.UserId = _userService.GetUserIdByUsername(loginModel.UserName).Result;
-
-                UserDTO editedUser = _userService.UpdateUser(user).Result;
-
-                if (editedUser is null)
-                {
-                    return BadRequest("Invalid client request");
-                }
-
                 return Ok(new AuthenticatedResponseDTO
                 {
-                    Token = accessToken,
-                    RefreshToken = refreshToken
+                    Token = accessToken
                 });
             }catch(Exception e)
             {

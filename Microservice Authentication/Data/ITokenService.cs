@@ -9,7 +9,6 @@ namespace Microservice_Authentication.Data
     public interface ITokenService
     {
         string GenerateAccessToken(IEnumerable<Claim> claims);
-        string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }
