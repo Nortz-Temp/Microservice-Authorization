@@ -26,31 +26,5 @@ namespace Microservice_Authentication.Controllers
             this._tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-
-        [HttpPost, Authorize]
-        [Route("revoke")]
-        public IActionResult Revoke()
-        {
-            var username = User.Identity.Name;
-            var userDTO = _userService.GetUserByUsername(username);
-
-            if (userDTO == null)
-            {
-                return BadRequest();
-            }
-
-            UserEntity user = _mapper.Map<UserEntity>(userDTO);
-            user.UserId = _userService.GetUserIdByUsername(username).Result;
-
-            _userService.UpdateUser(user);
-            if (user is not null)
-            {
-                return NoContent();
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
     }
 }

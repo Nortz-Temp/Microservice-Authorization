@@ -12,8 +12,8 @@ namespace Microservice_Authentication.Profiles
     {
         public UserProfile()
         {
-            CreateMap<UserEntity, UserDTO>();
-            CreateMap<UserDTO, UserEntity>();
+            CreateMap<UserEntity, UserFrontDTO>();
+            CreateMap<UserFrontDTO, UserEntity>();
         }
     }
 }
