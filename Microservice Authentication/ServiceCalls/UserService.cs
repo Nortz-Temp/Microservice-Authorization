@@ -23,7 +23,7 @@ namespace Microservice_Authentication.ServiceCalls
         {
             using (HttpClient client = new HttpClient())
             {
-                Uri url = new Uri($"{ configuration["Services:UserServiceLocal"] }api/users/auth/username");
+                Uri url = new Uri($"{ configuration["Services:UserService"] }api/users/auth/username");
                 HttpContent content = new StringContent(JsonConvert.SerializeObject(principal));
                 content.Headers.ContentType.MediaType = "application/json";
 
